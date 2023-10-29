@@ -27,8 +27,8 @@ async function main() {
       continue;
     }
 
-    if (lastStatus !== "locked") {
-      console.debug(`status: ${lastStatus}, skipping until status 'locked'`);
+    if (lastStatus === "open") {
+      console.debug(`status: open, skipping`);
       await new Promise((r) => setTimeout(r, Math.random() * 1000 + 5000));
       continue;
     }
@@ -37,6 +37,12 @@ async function main() {
       console.debug("status: open");
       lastStatus = "open";
       // TODO: find match in result log
+      await new Promise((r) => setTimeout(r, Math.random() * 1000 + 5000));
+      continue;
+    }
+
+    if (lastStatus === "result") {
+      console.debug(`status: result, skipping`);
       await new Promise((r) => setTimeout(r, Math.random() * 1000 + 5000));
       continue;
     }
