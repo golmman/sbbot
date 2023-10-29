@@ -3,11 +3,56 @@ const fs = require("fs");
 
 const SB_STATE_URL = "https://www.saltybet.com/state.json";
 //const SB_STATE_URL = 'https://httpbin.org/get';
+const SB_RESULT_LOG_FILE = "./logs/results0.log";
+
+function findMatchResults(resultLogs, p1name, p2name) {
+  let namesOrdered = resultLogs.filter(l => l.p1name === p1name && l.p2name === p2name);
+  let namesSwapped = resultLogs.filter(l => l.p1name === p2name && l.p2name === p1name);
+
+  let namesOrderedWins = namesOrdered.filter(l => l.status === '1').length;
+  let namesOrderedLosses = namesOrdered.length - namesOrderedWins;
+  let namesSwappedWins = namesSwapped.filter(l => l.status === '2').length;
+  let namesSwappedLosses = namesSwapped.length - namesSwappedWins;
+
+  let p1wins = namesOrderedWins + namesSwappedWins;
+  let p2wins = namesOrderedLosses + namesSwappedLosses;
+  let count = p1wins + p2wins;
+  let total = resultLogs.length;
+
+  return {
+    p1name,
+    p2name,
+    p1wins,
+    p2wins,
+    count,
+    total,
+  }
+}
+
+function printMatchResults(matchResults) {
+  let { p1name, p2name, p1wins, p2wins, count, total } = matchResults;
+
+  if (count === 0) {
+    console.info(`searched ${total} matches but found no results`);
+    console.info(`    '${p1name}' VS '${p2name}'`);
+  } else {
+    console.info(`SEARCHED ${total} MATCHES AND FOUND ${count} RESULTS`);
+    console.info(`    '${p1name}' (${p1wins} wins) VS (${p2wins} wins) '${p2name}'`);
+  }
+}
 
 async function main() {
   let response = null;
   let responseData = null;
   let lastStatus = null;
+
+  const resultLogs = fs
+    .readFileSync(SB_RESULT_LOG_FILE, "utf8")
+    .split("\n")
+    .filter((s) => s.length > 0)
+    .map((l) => JSON.parse(l));
+
+  console.info(`Welcome! There are currently ${resultLogs.length} match results in the database.`);
 
   while (true) {
     try {
@@ -36,7 +81,10 @@ async function main() {
     if (responseData.status === "open") {
       console.debug("status: open");
       lastStatus = "open";
-      // TODO: find match in result log
+
+      const matchResults = findMatchResults(resultLogs, responseData.p1name, responseData.p2name);
+      printMatchResults(matchResults);
+
       await new Promise((r) => setTimeout(r, Math.random() * 1000 + 5000));
       continue;
     }
@@ -50,8 +98,10 @@ async function main() {
     {
       console.debug("status: result");
       lastStatus = "result";
-      const result = JSON.stringify({ time: new Date(), ...responseData });
-      fs.appendFile("./logs/results0.log", result + "\n", () => {});
+      const result = { time: new Date(), ...responseData };
+      const resultString = JSON.stringify(result);
+      fs.appendFile(SB_RESULT_LOG_FILE, resultString + "\n", () => {});
+      resultLogs.push(result);
       await new Promise((r) => setTimeout(r, Math.random() * 1000 + 5000));
       continue;
     }
