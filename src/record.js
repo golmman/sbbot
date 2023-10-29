@@ -36,15 +36,17 @@ function findMatchResults(resultLogs, p1name, p2name) {
 function printMatchResults(matchResults) {
   let { p1name, p2name, p1wins, p2wins, count, total } = matchResults;
 
+  let date = new Date().toISOString();
+  let color = "";
+
   if (count === 0) {
-    console.info(`searched ${total} matches but found no results`);
-    console.info(`    '${p1name}' VS '${p2name}'`);
+    color = "\x1b[1;31m";
   } else {
-    console.info(`SEARCHED ${total} MATCHES AND FOUND ${count} RESULTS`);
-    console.info(
-      `    '${p1name}' (${p1wins} wins) VS (${p2wins} wins) '${p2name}'`,
-    );
+    color = "\x1b[1;32m";
   }
+  console.info(
+    `${color}${date}   SEARCHED ${total} MATCHES AND FOUND ${count} RESULTS\x1b[0m   '${p1name}' (${p1wins} wins) VS (${p2wins} wins) '${p2name}'`,
+  );
 }
 
 async function main() {
