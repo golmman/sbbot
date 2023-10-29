@@ -5,28 +5,49 @@ const SB_STATE_URL = "https://www.saltybet.com/state.json";
 //const SB_STATE_URL = 'https://httpbin.org/get';
 
 async function main() {
-  while (true) {
-    let response = await axios.get(SB_STATE_URL);
-    let responseData = response.data;
+  let response = null;
+  let responseData = null;
+  let lastStatus = null;
 
-    while (responseData.status !== "locked") {
-      await new Promise((r) => setTimeout(r, Math.random() * 1000 + 5000));
+  while (true) {
+    try {
       response = await axios.get(SB_STATE_URL);
       responseData = response.data;
+    } catch (error) {
+      console.error(error.message);
+      console.error("A connection error occurred, retrying in 60 seconds...");
+      await new Promise((r) => setTimeout(r, Math.random() * 1000 + 60000));
+      continue;
     }
 
-    while (responseData.status === "locked") {
+    if (responseData.status === "locked") {
+      console.debug("status: locked");
+      lastStatus = "locked";
       await new Promise((r) => setTimeout(r, Math.random() * 1000 + 500));
+      continue;
+    }
 
-      response = await axios.get(SB_STATE_URL);
-      responseData = response.data;
+    if (lastStatus !== "locked") {
+      console.debug(`status: ${lastStatus}, skipping until status 'locked'`);
+      await new Promise((r) => setTimeout(r, Math.random() * 1000 + 5000));
+      continue;
+    }
 
-      if (responseData.status !== "locked" && responseData !== "open") {
-        const result = JSON.stringify({ time: new Date(), ...response.data });
-        console.log(result);
-        fs.appendFile("./logs/results0.log", result + "\n", () => {});
-        await new Promise((r) => setTimeout(r, Math.random() * 1000 + 5000));
-      }
+    if (responseData.status === "open") {
+      console.debug("status: open");
+      lastStatus = "open";
+      // TODO: find match in result log
+      await new Promise((r) => setTimeout(r, Math.random() * 1000 + 5000));
+      continue;
+    }
+
+    {
+      console.debug("status: result");
+      lastStatus = "result";
+      const result = JSON.stringify({ time: new Date(), ...responseData });
+      fs.appendFile("./logs/results0.log", result + "\n", () => {});
+      await new Promise((r) => setTimeout(r, Math.random() * 1000 + 5000));
+      continue;
     }
   }
 }
