@@ -6,22 +6,42 @@ const SB_STATE_URL = "https://www.saltybet.com/state.json";
 const SB_RESULT_LOG_FILE = "./logs/results0.log";
 
 function findMatchResults(resultLogs, p1name, p2name) {
-  let namesOrdered = resultLogs.filter(
+  const namesOrdered = resultLogs.filter(
     (l) => l.p1name === p1name && l.p2name === p2name,
   );
-  let namesSwapped = resultLogs.filter(
+  const namesSwapped = resultLogs.filter(
     (l) => l.p1name === p2name && l.p2name === p1name,
   );
+  const namesOrderedWins = namesOrdered.filter((l) => l.status === "1").length;
+  const namesOrderedLosses = namesOrdered.length - namesOrderedWins;
+  const namesSwappedWins = namesSwapped.filter((l) => l.status === "2").length;
+  const namesSwappedLosses = namesSwapped.length - namesSwappedWins;
 
-  let namesOrderedWins = namesOrdered.filter((l) => l.status === "1").length;
-  let namesOrderedLosses = namesOrdered.length - namesOrderedWins;
-  let namesSwappedWins = namesSwapped.filter((l) => l.status === "2").length;
-  let namesSwappedLosses = namesSwapped.length - namesSwappedWins;
+  const p1totalOrdered = resultLogs.filter((l) => l.p1name === p1name);
+  const p1totalSwapped = resultLogs.filter((l) => l.p2name === p1name);
+  const p2totalOrdered = resultLogs.filter((l) => l.p2name === p2name);
+  const p2totalSwapped = resultLogs.filter((l) => l.p1name === p2name);
+  const p1totalOrderedWins = p1totalOrdered.filter(
+    (l) => l.status === "1",
+  ).length;
+  const p1totalSwappedWins = p1totalSwapped.filter(
+    (l) => l.status === "2",
+  ).length;
+  const p2totalOrderedWins = p2totalOrdered.filter(
+    (l) => l.status === "2",
+  ).length;
+  const p2totalSwappedWins = p2totalSwapped.filter(
+    (l) => l.status === "1",
+  ).length;
 
-  let p1wins = namesOrderedWins + namesSwappedWins;
-  let p2wins = namesOrderedLosses + namesSwappedLosses;
-  let count = p1wins + p2wins;
-  let total = resultLogs.length;
+  const p1wins = namesOrderedWins + namesSwappedWins;
+  const p2wins = namesOrderedLosses + namesSwappedLosses;
+  const count = p1wins + p2wins;
+  const total = resultLogs.length;
+  const p1total = p1totalOrdered.length + p1totalSwapped.length;
+  const p2total = p2totalOrdered.length + p2totalSwapped.length;
+  const p1totalWins = p1totalOrderedWins + p1totalSwappedWins;
+  const p2totalWins = p2totalOrderedWins + p2totalSwappedWins;
 
   return {
     p1name,
@@ -30,27 +50,54 @@ function findMatchResults(resultLogs, p1name, p2name) {
     p2wins,
     count,
     total,
+    p1total,
+    p2total,
+    p1totalWins,
+    p2totalWins,
   };
 }
 
 function printMatchResults(matchResults) {
-  let { p1name, p2name, p1wins, p2wins, count, total } = matchResults;
+  let {
+    p1name,
+    p2name,
+    p1wins,
+    p2wins,
+    count,
+    total,
+    p1total,
+    p2total,
+    p1totalWins,
+    p2totalWins,
+  } = matchResults;
 
-  let date = new Date().toISOString();
-  let color = "";
+  console.log(matchResults);
+
   const RED = "\x1b[31m";
   const GREEN = "\x1b[32m";
+  const BLUE = "\x1b[34m";
   const BOLD_YELLOW = "\x1b[1;33m";
+  const BOLD_RED = "\x1b[1;31m";
+  const BOLD_BLUE = "\x1b[1;34m";
+  const BG_RED = "\x1b[41m";
+  const BG_BLUE = "\x1b[44m";
   const RESET = "\x1b[0m";
+
+  const date = new Date().toISOString();
+  let color = "";
+  const p1winrate = Math.trunc((100 * p1totalWins) / p1total);
+  const p2winrate = Math.trunc((100 * p2totalWins) / p2total);
 
   if (count === 0) {
     color = RED;
   } else {
     color = GREEN;
   }
-  console.info(
-    `${date}   ${color}SEARCHED ${total} MATCHES AND FOUND ${count} RESULTS${RESET}   ${BOLD_YELLOW}${p1name}${RESET} ${p1wins}:${p2wins} ${BOLD_YELLOW}${p2name}${RESET}`,
-  );
+
+  const searchResult = `${color}SEARCHED ${total} MATCHES AND FOUND ${count} RESULTS${RESET}`;
+  const matchInfo = `${BOLD_RED}${p1name} (${p1total}, ${p1winrate}%)${RESET} ${p1wins}:${p2wins} ${BOLD_BLUE}${p2name} (${p2total}, ${p2winrate}%)${RESET}`;
+
+  console.info(`${date} --- ${searchResult} --- ${matchInfo}`);
 }
 
 async function main() {
@@ -68,6 +115,10 @@ async function main() {
   console.info(
     `Welcome! There are currently ${resultLogs.length} match results in the database.`,
   );
+
+  //const mr = findMatchResults(resultLogs, "Wild leona", "All in shao kahn");
+  //printMatchResults(mr);
+  //return;
 
   while (true) {
     try {
