@@ -38,14 +38,18 @@ function printMatchResults(matchResults) {
 
   let date = new Date().toISOString();
   let color = "";
+  const RED = "\x1b[31m";
+  const GREEN = "\x1b[32m";
+  const BOLD_YELLOW = "\x1b[1;33m";
+  const RESET = "\x1b[0m";
 
   if (count === 0) {
-    color = "\x1b[1;31m";
+    color = RED;
   } else {
-    color = "\x1b[1;32m";
+    color = GREEN;
   }
   console.info(
-    `${color}${date}   SEARCHED ${total} MATCHES AND FOUND ${count} RESULTS\x1b[0m   '${p1name}' (${p1wins} wins) VS (${p2wins} wins) '${p2name}'`,
+    `${date}   ${color}SEARCHED ${total} MATCHES AND FOUND ${count} RESULTS${RESET}   ${BOLD_YELLOW}${p1name}${RESET} ${p1wins}:${p2wins} ${BOLD_YELLOW}${p2name}${RESET}`,
   );
 }
 
