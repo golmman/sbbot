@@ -71,8 +71,6 @@ function printMatchResults(matchResults) {
     p2totalWins,
   } = matchResults;
 
-  console.log(matchResults);
-
   const RED = "\x1b[31m";
   const GREEN = "\x1b[32m";
   const BLUE = "\x1b[34m";
