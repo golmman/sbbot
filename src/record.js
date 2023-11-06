@@ -80,6 +80,7 @@ function printMatchResults(matchResults) {
     const BLUE = '\x1b[34m';
     const WHITE = '\x1b[37m';
     const BOLD_YELLOW = '\x1b[1;33m';
+    const BOLD_GREEN = '\x1b[1;32m';
     const BOLD_RED = '\x1b[1;31m';
     const BOLD_BLUE = '\x1b[1;34m';
     const BG_RED = '\x1b[41m';
@@ -97,18 +98,19 @@ function printMatchResults(matchResults) {
         color = GREEN;
     }
 
-    const searchResult =
-        `${color}${total} fights, ${count} hits${RESET}`.padStart(32);
+    const searchResult = `${color}${total} fights, ${count} hits${RESET}`.padStart(32);
+    const totalFights = `${total} fights`.padStart(14);
+    const hitFights = `${color}${count} hits${RESET}`.padStart(18);
     const matchInfoP1Wins = `${p1wins}`.padStart(3);
     const matchInfoP2Wins = `${p2wins}`.padEnd(3);
     const matchInfoP1 =
         `${BOLD_RED}${p1name} (${p1total}, ${p1winrate}%)${RESET} ${matchInfoP1Wins}`.padStart(
-            60,
+            70
         );
     const matchInfoP2 = `${matchInfoP2Wins} ${BOLD_BLUE}${p2name} (${p2total}, ${p2winrate}%)${RESET}`;
     const matchInfo = `${matchInfoP1}:${matchInfoP2}`;
 
-    console.info(`${date} | ${searchResult} | ${matchInfo}`);
+    console.info(`${date} | ${totalFights} | ${hitFights} | ${matchInfo}`);
 }
 
 async function main() {
@@ -127,9 +129,9 @@ async function main() {
         `Welcome! There are currently ${resultLogs.length} match results in the database.`,
     );
 
-    //const mr = findMatchResults(resultLogs, "Team A-", "Team B");
-    //printMatchResults(mr);
-    //return;
+    const mr = findMatchResults(resultLogs, "Team A", "Team B");
+    printMatchResults(mr);
+    return;
 
     while (true) {
         try {
