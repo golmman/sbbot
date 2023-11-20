@@ -129,9 +129,9 @@ async function main() {
         `Welcome! There are currently ${resultLogs.length} match results in the database.`,
     );
 
-    const mr = findMatchResults(resultLogs, "Team A", "Team B");
-    printMatchResults(mr);
-    return;
+    //const mr = findMatchResults(resultLogs, "Team A", "Team B");
+    //printMatchResults(mr);
+    //return;
 
     while (true) {
         try {

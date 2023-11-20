@@ -49,7 +49,7 @@ function main() {
     console.info(`   Total fighters: ${totalFighters}`);
     console.info(`Repeated fighters: ${repeatedFightersPercent}%`);
 
-    for (let i = 0; i < 5; i += 1) {
+    for (let i = 0; i < 10; i += 1) {
         console.info(
             `${fightersEntriesSorted[i][1]
                 .toString()
