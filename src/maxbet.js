@@ -10,16 +10,21 @@ function main() {
         .map((l) => JSON.parse(l));
 
     let maxbet = 0;
-    let p1index = 0;
+    let maxbetIndex = 0;
     for (let i = 0; i < resultLogs.length; i += 1) {
-      const p1bet = Number(resultLogs[i].p2total.replaceAll(',', ''));
-      if (p1bet > maxbet) {
-        maxbet = p1bet
-        p1index = i;
-      }
+        //console.log(JSON.stringify(resultLogs[i]));
+        const p1bet = Number(resultLogs[i].p1total.replaceAll(',', ''));
+        const p2bet = Number(resultLogs[i].p2total.replaceAll(',', ''));
+        if (p1bet > maxbet) {
+            maxbet = p1bet;
+            maxbetIndex = i;
+        }
+        if (p2bet > maxbet) {
+            maxbet = p2bet;
+            maxbetIndex = i;
+        }
     }
-    console.info(`p1bet: ${maxbet}`);
-    console.info(resultLogs[p1index]);
+    console.info(JSON.stringify(resultLogs[maxbetIndex]));
 }
 
 main();

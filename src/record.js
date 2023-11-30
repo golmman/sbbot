@@ -50,13 +50,13 @@ function findMatchResults(resultLogs, p1name, p2name) {
     return {
         p1name,
         p2name,
-        p1wins,
+        p1wins, // p1 wins in this particular fight constellation
         p2wins,
         count,
         total,
         p1total,
         p2total,
-        p1totalWins,
+        p1totalWins, // p1 wins overall
         p2totalWins,
     };
 }
