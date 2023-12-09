@@ -72,7 +72,7 @@ function calculateBet(fightHistory) {
     p2totalWins,
   } = fightHistory;
 
-  let relativeAmount = 0.1;
+  let relativeAmount = 0.01;
 
   let p1winrate = p1totalWins / p1total;
   let p2winrate = p2totalWins / p2total;
@@ -85,9 +85,9 @@ function calculateBet(fightHistory) {
   }
   const betOnP1 = p1winrate >= p2winrate;
 
-  if (Math.abs(p1winrate - p2winrate) <= 0.1) {
-    relativeAmount = 0;
-  }
+  //if (Math.abs(p1winrate - p2winrate) <= 0.1) {
+  //  relativeAmount = 0;
+  //}
 
   if (Math.abs(p1winrate - p2winrate) >= 0.5) {
     if (p1total > 5 && p2total > 5) {
